@@ -35,7 +35,7 @@ def write_mesh(path, v, f):
             else:
                 mf.write("%d %d %d\n" % tuple(face))
 
-def get_valid_tex_coords(vt, f):
+def get_valid_tex_coords(vt: np.ndarray, f:np.ndarray) -> tuple[np.ndarray, np.ndarray, dict]:
     v2u = [0] * vt.shape[0]
     for face in f:
         for vtxs in face:
