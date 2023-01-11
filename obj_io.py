@@ -47,7 +47,7 @@ def get_valid_tex_coords(vt: np.ndarray, f:np.ndarray) -> tuple[np.ndarray, np.n
 
     v2u = np.array(v2u)[tex_nonzeros]
 
-    u2v = defaultdict(lambda: [])
+    u2v = defaultdict(list)
     for i, u in enumerate(v2u): # tex idx, vtx idx
         u2v[u].append(i)
 
