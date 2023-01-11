@@ -140,7 +140,7 @@ def _solve_interpolation(
 
     matrix_a = _phi(_pairwise_squared_distance_matrix(c), order)  # [b, n, n]
     if regularization_weight > 0:
-        batch_identity_matrix = torch.unsqueeze(torch.eye(n, dtype=c.dtype), 0)
+        batch_identity_matrix = torch.unsqueeze(torch.eye(n, dtype=c.dtype, device=c.device), 0)
         matrix_a += regularization_weight * batch_identity_matrix
 
     # Append ones to the feature values for the bias term
@@ -152,11 +152,11 @@ def _solve_interpolation(
     left_block = torch.cat([matrix_a, torch.permute(matrix_b, [0, 2, 1])], 1)
 
     num_b_cols = matrix_b.shape[2]  # d + 1
-    lhs_zeros = torch.zeros([b, num_b_cols, num_b_cols], dtype=train_points.dtype)
+    lhs_zeros = c.new_zeros([b, num_b_cols, num_b_cols])
     right_block = torch.cat([matrix_b, lhs_zeros], 1)  # [b, n + d + 1, d + 1]
     lhs = torch.cat([left_block, right_block], 2)  # [b, n + d + 1, n + d + 1]
 
-    rhs_zeros = torch.zeros([b, d + 1, k], dtype=train_points.dtype)
+    rhs_zeros = c.new_zeros([b, d + 1, k])
     rhs = torch.cat([f, rhs_zeros], 1)  # [b, n + d + 1, k]
 
     # Then, solve the linear system and unpack the results.
@@ -280,10 +280,10 @@ def mesh_to_image(v:torch.Tensor, uv:torch.Tensor, v2u:list, w:int ,h:int):
     v = v[:, v2u]
     uv_min = [0,0]
     uv_max = [1,1]
-    x = torch.linspace(uv_min[0],uv_max[0], w)
-    y = torch.linspace(uv_min[1],uv_max[1], h)
+    x = torch.linspace(uv_min[0],uv_max[0], w).to(v.device)
+    y = torch.linspace(uv_min[1],uv_max[1], h).to(v.device)
     x,y = torch.meshgrid(x,y, indexing='xy') # make meshgrid
-    coord = torch.stack([x, y],-1).type(torch.float32) # stack
+    coord = torch.stack([x, y],-1).type(v.dtype) # stack
     coord = coord.reshape((-1,2)) # h*w, 2
     batch = v.shape[0]
     dim = v.shape[-1]
@@ -325,7 +325,7 @@ def image_to_mesh(img:torch.Tensor, uv:torch.Tensor, u2v: dict, vtx_num: int):
     # uvpos = torch.stack(uvpos, dim=1)
     # print(uvpos.shape)
 
-    v = torch.zeros([b, vtx_num, 3])
+    v = img.new_zeros([b, vtx_num, 3])
     for k, vs in u2v.items():
         v[:, k] += uvpos[:, vs].sum(dim=1) / len(vs)
 
