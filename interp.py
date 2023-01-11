@@ -287,8 +287,8 @@ def mesh_to_image(v:torch.Tensor, uv:torch.Tensor, v2u:list, w:int ,h:int):
     coord = coord.reshape((-1,2)) # h*w, 2
     batch = v.shape[0]
     dim = v.shape[-1]
-    uv = torch.tile(uv[None],(batch,1,1))
-    coord = torch.tile(coord[None],[batch, 1, 1])
+    uv = uv[None].expand((batch,-1, -1))
+    coord = coord[None].expand((batch, -1, -1))
     coord = torch.Tensor(coord)
     img = interpolate_spline(uv, v, coord, 1)
     img = torch.reshape(img, (batch, h, w, dim))
