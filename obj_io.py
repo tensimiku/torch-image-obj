@@ -19,7 +19,8 @@ def read_mesh(path):
                 f.append(list(map(lambda x: (int(x[0]), int(x[1])), map(lambda x: x.split('/'), l.split(' ')[1:]))))
             else:
                 f.append(list(map(lambda x: int(x), l.split(' ')[1:])))
-    
+    ml = max(map(lambda x: len(x), f))
+    f = list(map(lambda x: [i for i in x+[-1] * (ml - len(x))] if len(x) < ml else x, f))
     return np.array(v), np.array(vt), np.array(f) - 1 # 0 based idx
 
 def write_mesh(path, v, f):
@@ -32,6 +33,10 @@ def write_mesh(path, v, f):
             mf.write('f ')
             if type(face) == np.ndarray and len(face.shape) == 2:
                 mf.write("%d %d %d\n" % tuple(face[:, 0]))
+            elif face.shape[-1] == 4:
+                if face[-1] == -1:
+                    mf.write("%d %d %d\n" % tuple(face[:-1]))
+                mf.write("%d %d %d %d\n" % tuple(face))
             else:
                 mf.write("%d %d %d\n" % tuple(face))
 
