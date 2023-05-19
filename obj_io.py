@@ -36,7 +36,8 @@ def write_mesh(path, v, f):
             elif face.shape[-1] == 4:
                 if face[-1] == -1:
                     mf.write("%d %d %d\n" % tuple(face[:-1]))
-                mf.write("%d %d %d %d\n" % tuple(face))
+                else:
+                    mf.write("%d %d %d %d\n" % tuple(face))
             else:
                 mf.write("%d %d %d\n" % tuple(face))
 
