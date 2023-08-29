@@ -7,6 +7,7 @@ def read_mesh(path):
     v = []
     vt = []
     f = []
+    ft = []
     for l in lines:
         if l.startswith('v '):
             v.append(list(map(lambda x: float(x), l.split(' ')[1:])))
@@ -14,9 +15,10 @@ def read_mesh(path):
             vt.append(list(map(lambda x: float(x), l.split(' ')[1:])))
         if l.startswith('f '):
             if '//' in l: # ignore normal
-                f.append(list(map(lambda x: int(x[0]), map(lambda x: x.split('//'), l.split(' ')[1:]))))
+                f.append(list(map(lambda x: int(x[0]), map(lambda x: x.split('//'), l[1:].strip().split(' ')))))
             elif '/' in l:
-                f.append(list(map(lambda x: (int(x[0]), int(x[1])), map(lambda x: x.split('/'), l.split(' ')[1:]))))
+                f.append(list(map(lambda x: int(x[0]), map(lambda x: x.split('/'), l[1:].strip().split(' ')))))
+                # ft.append(list(map(lambda x: int(x[1]), map(lambda x: x.split('/'), l[1:].strip().split(' ')))))
             else:
                 f.append(list(map(lambda x: int(x), l.split(' ')[1:])))
     ml = max(map(lambda x: len(x), f))
