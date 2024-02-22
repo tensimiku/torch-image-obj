@@ -25,6 +25,23 @@ def read_mesh(path):
     f = list(map(lambda x: [i for i in x+[-1] * (ml - len(x))] if len(x) < ml else x, f))
     return np.array(v), np.array(vt), np.array(f) - 1, np.array(ft) - 1 if ft else [] # 0 based idx
 
+def write_mesh_vt(path, v, vt, f, ft):
+    f = f + 1
+    ft = ft + 1
+    with open(path, 'w') as mf:
+        for vertex in v:
+            mf.write('v ')
+            mf.write("%6.6f %6.6f %6.6f\n" % tuple(vertex))
+        
+        for vertex_texcoord in vt:
+            mf.write('vt ')
+            mf.write("%6.6f %6.6f\n" % tuple(vertex_texcoord))
+
+        for face, face_tex in zip(f, ft):
+            mf.write('f ')
+            fnt = np.array([[x, y] for x, y in zip(face, face_tex)]).reshape(-1)
+            mf.write("%d/%d %d/%d %d/%d %d/%d\n" % tuple(fnt))
+
 def write_mesh(path, v, f):
     f = f + 1
     with open(path, 'w') as mf:
