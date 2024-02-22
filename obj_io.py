@@ -18,12 +18,12 @@ def read_mesh(path):
                 f.append(list(map(lambda x: int(x[0]), map(lambda x: x.split('//'), l[1:].strip().split(' ')))))
             elif '/' in l:
                 f.append(list(map(lambda x: int(x[0]), map(lambda x: x.split('/'), l[1:].strip().split(' ')))))
-                # ft.append(list(map(lambda x: int(x[1]), map(lambda x: x.split('/'), l[1:].strip().split(' ')))))
+                ft.append(list(map(lambda x: int(x[1]), map(lambda x: x.split('/'), l[1:].strip().split(' ')))))
             else:
                 f.append(list(map(lambda x: int(x), l.split(' ')[1:])))
     ml = max(map(lambda x: len(x), f))
     f = list(map(lambda x: [i for i in x+[-1] * (ml - len(x))] if len(x) < ml else x, f))
-    return np.array(v), np.array(vt), np.array(f) - 1 # 0 based idx
+    return np.array(v), np.array(vt), np.array(f) - 1, np.array(ft) - 1 if ft else [] # 0 based idx
 
 def write_mesh(path, v, f):
     f = f + 1
