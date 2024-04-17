@@ -23,6 +23,7 @@ def read_mesh(path):
                 f.append(list(map(lambda x: int(x), l.split(' ')[1:])))
     ml = max(map(lambda x: len(x), f))
     f = list(map(lambda x: [i for i in x+[-1] * (ml - len(x))] if len(x) < ml else x, f))
+    ft = list(map(lambda x: [i for i in x+[-1] * (ml - len(x))] if len(x) < ml else x, ft))
     return np.array(v), np.array(vt), np.array(f) - 1, np.array(ft) - 1 if ft else [] # 0 based idx
 
 def write_mesh_vt(path, v, vt, f, ft):
